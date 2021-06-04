@@ -1,41 +1,29 @@
 #!/usr/bin/python3
-"""
-Write a script that reads stdin line by line and computes metrics
-"""
+"""Write a script that reads stdin line by line and computes metrics"""
 
-from sys import stdin
+import sys
 
+acum = 0
+codes = ["200", "301", "400", "401", "403", "404", "405", "500"]
+status = {}
 
-total_size = 0
-stats = {'200': 0, '301': 0, '400': 0, '401': 0, '403': 0,
-         '404': 0, '405': 0, '500': 0}
-
-
-def print_stats():
-    """
-    Print these statistics from the beginning
-    :return: None
-    """
-    print("File size: {}".format(total_size))
-    for key, value in sorted(stats.items()):
-        if value > 0:
-            print("{}: {}".format(key, value))
-
-
-if __name__ == "__main__":
-    line_counter = 0
-    try:
-        for line in stdin:
-            args = line.split()
-            line_counter += 1
-            if len(args) > 2:
-                total_size += int(args[-1])
-                if args[-2] in stats:
-                    stats.update({str(args[-2]): stats.get(args[-2]) + 1})
-            if line_counter == 10:
-                print_stats()
-                line_counter = 0
-    except KeyboardInterrupt:
-        print_stats()
-        raise
-    print_stats()
+try:
+    for i, line in enumerate(sys.stdin, 1):
+        split = line.split(' ')
+        if len(split) < 2:
+            continue
+        code = split[-2]
+        size = split[-1]
+        if code not in status and code in codes:
+            status[code] = 1
+        elif code in status and code in codes:
+            status[code] = status[code] + 1
+        acum = acum + eval(size)
+        if i % 10 == 0:
+            print("File size: {}".format(acum))
+            for key in sorted(status.keys()):
+                print("{}: {}".format(key, status[key]))
+finally:
+    print("File size: {}".format(acum))
+    for key in sorted(status.keys()):
+        print("{}: {}".format(key, status[key]))
