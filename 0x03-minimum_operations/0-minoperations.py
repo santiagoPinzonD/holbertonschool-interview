@@ -1,40 +1,20 @@
 #!/usr/bin/python3
-"""
-In a text file, there is a single character H. Your text editor
-can execute only two operations in this file: Copy All and Paste.
-Given a number n
-"""
+""" module that finds the minimun operations needed"""
+
+from math import sqrt
 
 
 def minOperations(n):
-    """
-    method that calculates the fewest number of
-    operations needed to result
-    in exactly n H characters in the file
-    """
-    list1 = []
-    if n < 4:
-        return 3
-    if n % 2 == 0:
-        sum1 = 2
-    else:
-        sum1 = 3
-    for x in range(1, n + 1):
-        if x < 3:
-            list1.append(x)
-        elif sum1 == 3:
-            if x == 3:
-                list1.append(x)
-            list1.append(list1[-1] + sum1)
-            if list1[-1] == n:
+    """ checks minimun operations required """
+    min_operations = 0
+    if n <= 1:
+        return 0
+    for i in range(2, int(sqrt(n) + 1)):
+        while n % i == 0:
+            min_operations = min_operations + i
+            n = n / i
+            if n <= 1:
                 break
-        else:
-            if x > 2:
-                list1.append(list1[-1] + sum1)
-                if list1[-1] == n:
-                    break
-    result = len(list1) + 1
-    if result % 2 == 0 and result > 6:
-        result -= 1
-    return result
-
+    if n > 1:
+        min_operations = min_operations + int(n)
+    return min_operations
