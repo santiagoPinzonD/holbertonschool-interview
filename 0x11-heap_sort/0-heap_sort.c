@@ -1,115 +1,75 @@
 #include "sort.h"
+
 /**
- * heap_sort - heap sort
+ * swap - Swaps two elements of an array
+ * @array: The array to be sorted
+ * @i: The first element
+ * @j: The second element
+ * @r_size: The size of the array
+ * Return: void
+ */
+void swap(int *array, int i, int j, const int r_size)
+{
+	int tmp;
+	(void)r_size;
+
+	if (i != j)
+	{
+		tmp = array[i];
+		array[i] = array[j];
+		array[j] = tmp;
+		print_array(array, (size_t)r_size);
+	}
+}
+
+/**
+ * sift_down - Sifts down an element in an array
+ * @array: The array to be sorted
+ * @i: The element to be sifted down
+ * @size: The size of the array
+ * @r_size: The root of the heap
+ * Return: void
+ */
+void sift_down(int *array, size_t size, int i, const int r_size)
+{
+	int largest = i;
+	int lft = (2 * i) + 1;
+	int rgt = (2 * i) + 2;
+
+	if (lft < (int)size && array[lft] > array[largest])
+		largest = lft;
+
+	if (rgt < (int)size && array[rgt] > array[largest])
+		largest = rgt;
+
+	if (largest != i)
+	{
+		swap(array, i, largest, r_size);
+		sift_down(array, size, largest, r_size);
+	}
+}
+
+/**
+ * heap_sort - Sorts an array of integers in ascending order using the Heap
+ * sort algorithm
  *
- * @array: Array of integers to be printed
+ * @array: The array to be sorted
  * @size: Number of elements in @array
  */
 void heap_sort(int *array, size_t size)
 {
-	int limit_index, i, first_node_index, last_node_index;
+	const int r_size = (const int)size;
+	int i;
 
-	for (i = 0; i < (int)size; i++)
+	if (size < 2 || !array)
+		return;
+
+	for (i = size / 2 - 1; i >= 0; i--)
+		sift_down(array, size, i, r_size);
+
+	for (i = size - 1; i >= 0; i--)
 	{
-		limit_index = (int)size - (i + 1);
-
-		build_heap_sort(array, limit_index, 0, size);
-
-		first_node_index = 0;
-		last_node_index = limit_index;
-
-		if (((int)size - 1) != i)
-			siftDown(array, first_node_index, last_node_index, size);
+		swap(array, 0, i, r_size);
+		sift_down(array, i, 0, r_size);
 	}
-}
-
-/**
- * build_heap_sort - Build heap sort
- *
- * @array: Array of integers to be printed
- * @limit: Limit index
- * @index: current index
- * @size: Number of elements in @array
- */
-void build_heap_sort(int *array, int limit, int index, size_t size)
-{
-	int left = 1, right = 2, child_left_index,
-		child_right_index, higher_child_index;
-
-	child_left_index = get_index_child(limit, index, left);
-	child_right_index = get_index_child(limit, index, right);
-
-	if (child_left_index)
-		build_heap_sort(array, limit,  child_left_index, size);
-	if (child_right_index)
-		build_heap_sort(array, limit, child_right_index, size);
-
-	if (child_left_index || child_right_index)
-	{
-		if (child_left_index && child_right_index)
-		{
-			if (array[child_left_index] > array[child_right_index])
-				higher_child_index = child_left_index;
-			else
-				higher_child_index = child_right_index;
-		} else if (child_left_index && !child_right_index)
-		{
-			higher_child_index = child_left_index;
-		} else
-		{
-			higher_child_index = child_right_index;
-		}
-
-		if (array[higher_child_index] > array[index])
-		{
-			siftDown(array, index, higher_child_index, size);
-			build_heap_sort(array, limit, index, size);
-		}
-	}
-}
-
-/**
- * get_index_parent - get index parent
- *
- * @index: Current index
- * Return: parent index
- */
-int get_index_parent(int index)
-{
-	return ((index - 1) / 2);
-}
-
-/**
- * get_index_child - get index child
- *
- * @limit: Array of integers to be printed
- * @parent_index: Number of elements in @array
- * @side: side
- * Return: get index child
- */
-int get_index_child(int limit, int parent_index, int side)
-{
-	int child_index =  2 * parent_index + side;
-
-	if (child_index > limit)
-		return (0);
-	return (child_index);
-}
-
-/**
- * siftDown - sift down
- *
- * @array: Array of integers to be printed
- * @index_a: index a
- * @index_b: index b
- * @size: Number of elements in @array
- */
-void siftDown(int *array, int index_a, int index_b, size_t size)
-{
-	int temp;
-
-	temp = array[index_a];
-	array[index_a] = array[index_b];
-	array[index_b] = temp;
-	print_array(array, size);
 }
