@@ -1,37 +1,82 @@
 #!/usr/bin/python3
-""" Module that solves the N queens problem """
-
+"""
+program that solves the N queens problem
+Usage: nqueens N
+    If the user called the program with the wrong number of arguments,
+    print Usage: nqueens N, followed by a new line, and exit with the status 1.
+where N must be an integer greater or equal to 4
+    If N is not an integer, print N must be a number,
+    followed by a new line, and exit with the status 1
+    If N is smaller than 4, print N must be at least 4,
+    followed by a new line, and exit with the status.
+"""
 
 import sys
 
 
-if __name__ == "__main__":
+def queens(n):
+    """program that solves the N queens problem"""
+    trail = []
+    sets = set()
+
+    for column in range(n):
+        trail.append([0, column])
+        sets.add(column)
+
+    road = []
+
+    while trail:
+        [row, column] = trail.pop(0)
+        while road and (row < road[0][0]):
+            road.pop(0)
+
+        if road and (row == road[0][0]):
+            road[0] = [row, column]
+
+        else:
+            road.insert(0, [row, column])
+
+        nextsrows = row + 1
+        death = set()
+
+        for (i, j) in road:
+            death.add(j)
+            distance = nextsrows - i
+
+            if j - distance >= 0:
+                death.add(j - distance)
+
+            if j + distance < n:
+                death.add(j + distance)
+
+        safe = sets.difference(death)
+
+        if not safe:
+            if nextsrows == n:
+                temp = road.copy()
+                temp.reverse()
+                print(temp, flush=True)
+            road.pop(0)
+
+        else:
+            safe = list(safe)
+            safe.reverse()
+            for position in safe:
+                trail.insert(0, [nextsrows, position])
+
+
+if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
-        sys.exit(1)
+        exit(1)
+
+    if int(sys.argv[1]) < 4:
+        print("N must be at least 4")
+        exit(1)
 
     try:
-        N = int(sys.argv[1])
-    except ValueError:
+        n = int(sys.argv[1])
+    except:
         print("N must be a number")
-        sys.exit(1)
-
-    if N < 4:
-        print("N must be at least 4")
-        sys.exit(1)
-
-
-def bTracking(N, i=0, a=[], b=[], c=[]):
-    """Generates backtracking of the answers of the puzzle """
-    if i < N:
-        for j in range(N):
-            if j not in a and i+j not in b and i-j not in c:
-                for ans in bTracking(N, i+1, a+[j], b+[i+j], c+[i-j]):
-                    yield ans  # iterator of the solutions
-    else:
-        yield a  # iterator of the first list with no answer
-
-
-for ans in bTracking(N):
-    resp = [[col, row] for col, row in enumerate(ans)]
-    print(resp)
+        exit(1)
+    queens(n)
